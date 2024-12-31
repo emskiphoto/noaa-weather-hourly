@@ -1,9 +1,3 @@
-# README.md Editor
-This script is used to edit the README.md file published in project repo in Github.  This script is simply a place to develop & check the appearance of the markdown formatting prior to publishing as a README.md saved in the project root directory.
-
-December 31, 2024
-Copyright https://github.com/emskiphoto
-
 # noaa-weather-hourly
 
 `noaa-weather-hourly` cleans historical LCD weather files from the National Oceanic and Atmospheric Administration (NOAA).  It uses a simple command line interface to generate observed hourly (and other frequency) .CSV files.  
@@ -17,32 +11,31 @@ Copyright https://github.com/emskiphoto
 * PressureChange
 * RelativeHumidity
 * StationPressure
+* Sunrise
+* Sunset
 * Visibility
 * WetBulbTemperature
 * WindDirection
 * WindGustSpeed
 * WindSpeed
-* Sunrise
-* Sunset
 
 ### Installation
 This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa-weather-hourly' command available to run from any directory on the computer.
 
-_Once `noaa-weather-hourly` is published on [pypi.org](https://pypi.org/) (est. January 2025) installation is simply `pipx install noaa-weather-hourly`.  Until then, use the following steps._
-
-1. Obtain Code through git OR download<BR>
+1. __Obtain Code__ through git OR download<BR>
     a. `git clone https://github.com/emskiphoto/noaa-weather-hourly.git` at a terminal prompt (requires git installation [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
     a. Simple download….<BR>
     
-2. [Install Python (version 3.8 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
-3. Install pipx <BR>
+2. [__Install Python__ (version 3.8 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
+3. __Install pipx__ <BR>
     Windows:  
     `py -m pip install --user pipx`<BR>
     `py -m pipx ensurepath`<BR>
     Unix/macOS:<BR>
     `python3 -m pip install --user pipx`<BR>
     `python3 -m pipx ensurepath`<BR>
-4. `pipx install noaa-weather-hourly`
+4. __Install noaa-weather-hourly 
+    `pipx install noaa-weather-hourly`
 
 ### Usage
 Open a terminal prompt ('Powershell' in Windows) and process the sample LCD file ".\data\test_file_lcd.csv" that is included in installation.  <BR>
@@ -134,6 +127,12 @@ https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2
 * Does not compare to other references
 * No Forecast
 
+    
+### Acknowledgements
+* [diyepw](https://github.com/IMMM-SFA/diyepw/tree/main) -  Amanda D. Smith, Benjamin Stürmer, Travis Thurber, & Chris R. Vernon. (2021). diyepw: A Python package for [EnergyPlus Weather (EPW) files](https://bigladdersoftware.com/epx/docs/8-3/auxiliary-programs/energyplus-weather-file-epw-data-dictionary.html) generation. Zenodo. https://doi.org/10.5281/zenodo.5258122<BR>
+* [pycli](https://github.com/trstringer/pycli/tree/master) - Python command-line interface reference
+* [Degree Days.net](https://www.degreedays.net/) - Excellent reference for weather-related energy engineering analysis    
+
 ### Example Alternative Observed Weather Data Sources
 http://weather.whiteboxtechnologies.com/hist<BR>
 https://openweathermap.org/history<BR>
@@ -152,12 +151,9 @@ https://github.com/DevinRShaw/simple_noaa<BR>
 https://github.com/awslabs/amazon-asdi/tree/main/examples/noaa-isd<BR>
 https://pypi.org/project/climate-analyzer<BR>
 
-### Acknowledgements
-* [diyepw](https://github.com/IMMM-SFA/diyepw/tree/main) -  Amanda D. Smith, Benjamin Stürmer, Travis Thurber, & Chris R. Vernon. (2021). diyepw: A Python package for [EnergyPlus Weather (EPW) files](https://bigladdersoftware.com/epx/docs/8-3/auxiliary-programs/energyplus-weather-file-epw-data-dictionary.html) generation. Zenodo. https://doi.org/10.5281/zenodo.5258122<BR>
-* [pycli](https://github.com/trstringer/pycli/tree/master) - Python command-line interface reference
-* [Degree Days.net](https://www.degreedays.net/) - Excellent reference for weather-related energy engineering analysis
 
-### TL;DR - Background
+
+## TL;DR - Background
 #### Different Weather Causes Different Performance
 Weather-dependent models like building energy models generally use typical weather values to estimate a given metric for a system.  For example, typical weather values would be used to estimate the annual energy consumption of a building cooling system.  Inevitably, the actual weather the system experiences in the real world is _different_ than the weather used to create the model.  If the model is sensitive to weather the distinct typical & actual weather values will cause cumulative metrics to be different.  If the amplitude of these differences is larger than the cumulative impact of individual system elements (ex. the cooling system), it may not be possible to compare modeled and actual performance.  
 
