@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "noaa-weather-hourly"
+version = "0.1.0"
+description = ""
+authors = ["Matt Chmielewski <43832628+emskiphoto@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+noaa-weather-hourly = "noaa_weather_hourly.cli:cli"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
