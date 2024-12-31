@@ -61,7 +61,10 @@ $ `noaa-weather-hourly -frequency 'D' '<path_to_LCD_CSV_file>'`
 
 
 ## Download NOAA LCD .CSV file
-`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as follows.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  
+`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as follows.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work. 
+
+[NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
+[LCD Documentation](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
 
 It is recommended to store downloaded files in separate folders by location.   
 
@@ -77,7 +80,7 @@ It is recommended to store downloaded files in separate folders by location.
 8. Check email inbox for a "Climate Data Online request 1234567 complete" message and Download the LCD CSV file to a local folder using the "Download" link.
 
 ### After Spring 2024 (_one or more files per calendar year, or single multi-year bundle_):
-[<img alt="NOAA LCD2 Website" width="800px" src="images\NOAA_LCD2_data_tools_website.PNG" />]
+[<img alt="NOAA LCD2 Website" width="600px" src="images\NOAA_LCD2_data_tools_website.PNG" />]
 1. Go to [Local Climatological Data (LCD), Version 2 (LCDv2)](https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2)
 2. __What ?__: Select columns to be included in the file by clicking on 'Show List'.    
     - Beware that selecting columns that are not available for a given location will result in that location being excluded entirely from the search results.  
@@ -89,7 +92,7 @@ It is recommended to store downloaded files in separate folders by location.
 
 ## Process Details
 The `noaa-weather-hourly` makes the source LCD file ready-to-use by resolving the following data formatting and quality issues.  
-[<img alt="Raw LCD file data issues" width="800px" src='images\Raw LCD file data issues.PNG' />] 
+[<img alt="Raw LCD file data issues" width="600px" src='images\Raw LCD file data issues.PNG' />] 
     
 There are more than 100 possible source columns, but `noaa-weather-hourly` processes only 'Hourly...' columns and 'Sunrise', 'Sunset' & 'DATE' columns.  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in.
 
@@ -103,17 +106,8 @@ There are more than 100 possible source columns, but `noaa-weather-hourly` proce
     - most columns are expected to have non-null values for every timestamp (i.e., 'DryBulbTemperature')
     - some columns are expected to have null values at some times and the null values are preserved in the output (ie., 'Precipitation', 'WindGustSpeed') 
 8. Saves a single .CSV file to the same location as the source LCD file(s) (will overwrite existing files if an identical file already exists).
-9. Output file is named ??????
-
-## NOAA LCD Data Source
-[<img alt="NOAA LCD Website" width="800px" src="images\NOAA_LCD_data_tools_website.PNG" />]
-
-[NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
-[LCD Documentation](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
-
-
-Version 2 coming Q1 25
-https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2
+9. Output file is named "{STATION_NAME} {from_str} to {end_str} {freqstr}.csv", (ie.,
+    "CHICAGO O'HARE INTERNATIONAL 2020-01-01 to 2023-12-31_H.csv")
 
 ### Weather Station Directory
 `noaa-weather-hourly` includes a processed 'isd-history.csv' file containing the details of ~4300 active stations and ID cross-references (ICAO, FAA, WMO, WBAN) provided by [Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt).  This data is only used to define LCD weather file location data as this is not provided in the LCD CSV itself.  The data source is updated regularly, but the version in this script is not.  If updates are needed, consider running the 'ISD History Station Table.py' to update 'data/isd-history.csv'.
