@@ -1,3 +1,4 @@
+# noaa-weather-hourly
 # this is a CLI script intended to test basic functionality
 # it reads a local CSV and writes a modified version back to disk with a new name
 # script can take in multiple command line arguments
