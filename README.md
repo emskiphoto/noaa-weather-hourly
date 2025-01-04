@@ -38,8 +38,15 @@ This is a Python script that requires a local Python installation.  The followin
     `pipx install noaa-weather-hourly`
 
 ## Usage
-Open a terminal prompt ('Powershell' in Windows) and process the sample LCD file ".\data\test_file_lcd.csv" that is included in installation.  <BR>
-$ `noaa-weather-hourly ".\data\test_file_lcd.csv"`
+Open a terminal prompt ('Powershell' in Windows).  Navigate to specific folders using the `cd` command to go down the directory tree and `cd..` to go back up the directory tree.
+    
+### Usage for specific file 
+Process the version 1 LCD file ".\data\test_file_lcd1.csv" that is included in installation.  <BR>
+$ `noaa-weather-hourly ".\data\test_file_lcd1.csv"`
+
+### Usage for most recent file(s)
+Automatically select the newest files in the current directory based on last date modified and group all files with the same weather station ID in to a single output.<BR>
+$ `noaa-weather-hourly`
 
 ### Usage for Frequencies other than Hourly
 The default output contains Hourly frequency data.  Any of the following data frequencies can be output using the `-frequency` argument:<BR>
@@ -48,16 +55,18 @@ $ `noaa-weather-hourly [-frequency FREQUENCY] filename`
 For example, a 15-minute frequency output:<BR>
 $ `noaa-weather-hourly -frequency '15T' '<path_to_LCD_CSV_file>'`
 
-Or a daily frequency output:<BR>
-$ `noaa-weather-hourly -frequency 'D' '<path_to_LCD_CSV_file>'`
+Or a daily frequency output using the most recent file(s):<BR>
+$ `noaa-weather-hourly -frequency 'D'`
 
-'D': 'Daily',
-'W': 'Weekly',
-'M': 'Monthly',
-'Q': 'Quarterly',
-'Y': 'Yearly',
-'H': 'Hourly',
-'T': 'Minutely'
+'H':    'Hourly',
+'T':    'Minutely'
+'D':    'Daily',
+'W':    'Weekly',
+'M':    'Monthly',
+'Q':    'Quarterly',
+'Y':    'Yearly',
+
+The core frequency argument can be modified for other frequencies.  For example, a 15-minute frequency dataset can be generated with '15T' and '3H' will generate a '3-Hourly' frequency file.
 
 
 ## Download NOAA LCD .CSV file
@@ -77,7 +86,7 @@ It is recommended to store downloaded files in separate folders by location.
 5. Select the Date Range.  Consider adding an additional week before and after the needed date range to support interpolation of missing values.
 6. "Enter Email Address" where a link to the LCD CSV download should be delivered.
 7. "Submit Order"
-8. Check email inbox for a "Climate Data Online request 1234567 complete" message and Download the LCD CSV file to a local folder using the "Download" link.
+8. Check email inbox for a "Climate Data Online request 1234567 complete" message and Download the LCD CSV file to a local folder using the "Download" link.  Do not change the name(s) of the LCD file(s).
 
 ### After Spring 2024 (_one or more files per calendar year, or single multi-year bundle_):
 [<img alt="NOAA LCD2 Website" width="600px" src="images\NOAA_LCD2_data_tools_website.PNG" />]
@@ -88,7 +97,7 @@ It is recommended to store downloaded files in separate folders by location.
 3. __Where ?__:  Input weather station location.  A list of all available annual weather files for all matching locations will be displayed.  Use the 'When' inputs to filter this list.
 4. __When ?__:  (optional) For a single calendar year, select any date in that year.  For multiple calendar years click 'Select Date Range' and input start and end dates of the range.
 5. (Recommended) Review list of matching files and click "Download" for each file.
-    - (Alternatively) Merge multiple years of data as a single large file by "+ Select" multiple files.  Then select "Output Format" csv, click on "Configure and Add" and "Add Order to Cart".  "Proceed to Cart", provide and Email address and click "Submit".  Check email inbox for a "Climate Data Online request 1234567 complete" message and download the LCD CSV file to any local folder using the "Download" link.  
+    - (Alternatively) Merge multiple years of data as a single large file by "+ Select" multiple files.  Then select "Output Format" csv, click on "Configure and Add" and "Add Order to Cart".  "Proceed to Cart", provide and Email address and click "Submit".  Check email inbox for a "Climate Data Online request 1234567 complete" message and download the LCD CSV file to any local folder using the "Download" link.  Do not change the name(s) of the LCD file(s).  
 
 ## Process Details
 The `noaa-weather-hourly` makes the source LCD file ready-to-use by resolving the following data formatting and quality issues.  
@@ -98,6 +107,7 @@ There are more than 100 possible source columns, but `noaa-weather-hourly` proce
 
 1. Creates a copy of the source LCD file(s), leaving the source file(s) unmodified
 2. Extracts ID data and gathers additional station details
+3. Determines if input files are LCD v1 or v2 and 
 3. Merges multiple source files having the same station ID and resolves overlapping date ranges
 4. Formats 'Sunrise' and 'Sunset' times
 5. Removes recurring daily timestamps that contain more null values than allowed by 'pct_null_timestamp_max' parameter
@@ -167,13 +177,13 @@ Incentives and financing of high-efficiency solutions are ubiquitous.  When larg
 
 Energy Service Companies (ESCO) and other efficiency solutions providers often guarantee specific performance improvements in contracts (ie., 10% reduction in annual electricity cost due to cooling system replacement).  If the solution does not achieve the estimated savings, the ESCO is liable for the financial difference in operating cost and possibly more.  Observed performance improvements are determined by comparing a baseline model to observed performance.  
 
-In both cases, __the estimation of performance improvements is only valid if the impact of weather variance between model/baseline and observed reality is accounted for__. 
+In both cases, __the estimation of performance improvements is only valid if the impact of weather variance between the baseline model and observed reality is accounted for__. 
 
 ### Solution:  Weather-normalization
 The solution to aligning the results of a model made with one set of weather values and actual results resulting from a different set of values is to weather-normalize the results.  This normalization process is only possible if both the typical and actual weather values are available.  Once the modeled and actual results are aligned (ie. the influence of weather variance is removed) the difference in expected and actual performance can be evaluated in detail.
 
 ### Availability of Free Weather Data
-Weather data is abundant & free in the modern connected world.  However, obtaining good, _usable_ data that is already available in the public forum is not necessarily easy or free of cost.  `noaa-weather-hourly` was created to facilitate convenient, free access to small volumes of hourly USA weather as a convenient .CSV file.  
+Otaining good, _usable_ data that is already available in the public domain is not necessarily easy or free of cost.  `noaa-weather-hourly` was created to facilitate convenient, free usage of limited volumes of hourly USA weather published by NOAA as a convenient .CSV file.  
 
-There are numerous subscription or purchase-based [sources of historical weather]('#example-alternative-observed-weather-data-sources'), and many offer API access.  These sources may be the most cost-effective solution when many locations are needed and/or the data need to be updated frequently.
+There are numerous subscription or purchase-based [sources of historical weather]('#example-alternative-observed-weather-data-sources'), and many offer API access.  These sources may be preferable when many locations are needed and/or the data need to be updated frequently.
 
