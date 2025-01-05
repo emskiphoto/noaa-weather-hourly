@@ -70,7 +70,7 @@ The core frequency argument can be modified for other frequencies.  For example,
 
 
 ## Download NOAA LCD .CSV file
-`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as follows.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work. 
+`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as follows.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  No account or API key is required, just an email address.
 
 [NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
 [LCD Documentation](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
@@ -186,4 +186,3 @@ The solution to aligning the results of a model made with one set of weather val
 Otaining good, _usable_ data that is already available in the public domain is not necessarily easy or free of cost.  `noaa-weather-hourly` was created to facilitate convenient, free usage of limited volumes of hourly USA weather published by NOAA as a convenient .CSV file.  
 
 There are numerous subscription or purchase-based [sources of historical weather]('#example-alternative-observed-weather-data-sources'), and many offer API access.  These sources may be preferable when many locations are needed and/or the data need to be updated frequently.
-

@@ -1,6 +1,10 @@
 # config.py
 # noaa-weather-hourly
 
+# command line arguments
+filename = ''
+freqstr = 'H'
+
 # v1 LCD csv file name regex
 pattern_lcd1_input_file = r'^[0-9]{5,10}.csv'
 pattern_lcd1_example = '3876540.csv'
@@ -20,7 +24,6 @@ file_output_format = """{STATION_NAME} {from_str} to {end_str} {freqstr}.csv"""
 
 # Parameters
 pct_null_timestamp_max = 0.5
-freqstr = 'H'
 freqstr_frequency = {'D': 'Daily',
 'W': 'Weekly',
 'M': 'Monthly',
