@@ -2,6 +2,7 @@
 # noaa-weather-hourly
 import pathlib
 import re
+import pandas as pd
 
 def say_hello():
     print('Hello from the Utils.py module')
@@ -41,3 +42,24 @@ def find_files_re_pattern_sorted_last_modified(directory, pattern, descending=Tr
                            key=lambda x: x[1], reverse=descending)]
     except:
         return None
+    
+    
+def datetime_from_HHMM(x):
+    """Returns series x with HHMM time values converted to complete
+    'YYYY-MM-DD hh:mm:ss' format timestamp objects.  Input series x
+    must have a datetime index and is expected to hold time data in
+    the '%H%M' format.  For example  '0751' or '751.0' is interpreted as
+    07:51:00."""
+    
+    time = pd.to_datetime(pd.to_numeric(x.dropna().ffill()\
+                             .bfill()), format = '%H%M')
+    YMDHMS = pd.DataFrame({'Year': x.index.year,
+                         'Month' : x.index.month,
+                        'Day' : x.index.day,
+                        'Hour' : time.dt.hour,
+                         'Minute' : time.dt.minute,
+                          'Second' : time.dt.second})
+
+    return pd.to_datetime(YMDHMS)
+    del time
+    del YMDHM
