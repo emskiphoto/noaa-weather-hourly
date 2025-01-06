@@ -21,7 +21,8 @@
 * No source data
 
 <img alt="Clean LCD output file" width="800px" src="images\Clean LCD output file.PNG" />
-[LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
+
+- [LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
 
 ## Installation
 This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa-weather-hourly' command available to run from any directory on the computer.
@@ -76,14 +77,15 @@ The core frequency argument can be modified for other frequencies.  For example,
 ## Download NOAA LCD .CSV file
 `noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as described below.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  No account or API key is required, just an email address to receive a download link.
 
-[NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
-[LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
-[LCD Documentation Source](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
+* [NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
+* [LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
+* [LCD Documentation Source](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
 
 It is recommended to store downloaded files in separate folders by location.   
 
 ### Before Spring 2024 (_multiple years in a single, large file_):
 <img alt="NOAA LCD Website" width="800px" src="images\NOAA_LCD_data_tools_website.PNG" />
+    
 1. Go to [NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
 2. Find the desired Weather Station and select 'Add to Cart'
 3. Click on 'cart (Free items)'
@@ -95,6 +97,7 @@ It is recommended to store downloaded files in separate folders by location.
 
 ### After Spring 2024 (_one or more files per calendar year, or single multi-year bundle_):
 <img alt="NOAA LCD2 Website" width="600px" src="images\NOAA_LCD2_data_tools_website.PNG" />
+    
 1. Go to [Local Climatological Data (LCD), Version 2 (LCDv2)](https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2)
 2. __What ?__: Select columns to be included in the file by clicking on 'Show List'.    
     - Beware that selecting columns that are not available for a given location will result in that location being excluded entirely from the search results.  
