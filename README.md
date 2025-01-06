@@ -133,6 +133,8 @@ There are more than 100 possible source columns, but `noaa-weather-hourly` proce
 * Does not modify values from source
     - Does not filter or smooth apparently noisy source data
 * Does not process or convert categorical data like 'HourlySkyConditions'
+* Intended for data frequencies between yearly and 15-minutely.  Will accept frequencies
+  as low as minutely ('T') but the output file size may be excessively large.   
 * Does not compare to other references
 * No Forecast
 
