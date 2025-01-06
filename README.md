@@ -2,7 +2,7 @@
 
 `noaa-weather-hourly` cleans historical LCD weather files from the National Oceanic and Atmospheric Administration (NOAA).  It uses a simple command line interface to generate observed hourly (and other frequency) .CSV files.  
 
-## Output Columns:
+## Output Columns
 * Date
 * AltimeterSetting
 * DewPointTemperature
@@ -18,6 +18,9 @@
 * WindDirection
 * WindGustSpeed
 * WindSpeed
+* No source data
+
+[<img alt="Clean LCD output file" width="800px" src="images\Clean LCD output file.PNG" />]
 
 ## Installation
 This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa-weather-hourly' command available to run from any directory on the computer.
@@ -38,7 +41,7 @@ This is a Python script that requires a local Python installation.  The followin
     `pipx install noaa-weather-hourly`
 
 ## Usage
-Open a terminal prompt ('Powershell' in Windows).  Navigate to specific folders using the `cd` command to go down the directory tree and `cd..` to go back up the directory tree.
+Open a terminal prompt ('Powershell' in Windows).  Navigate to specific folders using the `cd folder_name` command to go up the directory tree and `cd..` to go back down the directory tree.
     
 ### Usage for specific file 
 Process the version 1 LCD file ".\data\test_file_lcd1.csv" that is included in installation.  <BR>
@@ -70,7 +73,7 @@ The core frequency argument can be modified for other frequencies.  For example,
 
 
 ## Download NOAA LCD .CSV file
-`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as follows.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  No account or API key is required, just an email address.
+`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as described below.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  No account or API key is required, just an email address to receive a download link.
 
 [NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
 [LCD Documentation](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
@@ -93,7 +96,7 @@ It is recommended to store downloaded files in separate folders by location.
 1. Go to [Local Climatological Data (LCD), Version 2 (LCDv2)](https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2)
 2. __What ?__: Select columns to be included in the file by clicking on 'Show List'.    
     - Beware that selecting columns that are not available for a given location will result in that location being excluded entirely from the search results.  
-    - It's recommended to select only the columns listed in  [Output Columns](#output-columns:)  
+    - It's recommended to select only the columns listed in  [Output Columns](#output-columns)  
 3. __Where ?__:  Input weather station location.  A list of all available annual weather files for all matching locations will be displayed.  Use the 'When' inputs to filter this list.
 4. __When ?__:  (optional) For a single calendar year, select any date in that year.  For multiple calendar years click 'Select Date Range' and input start and end dates of the range.
 5. (Recommended) Review list of matching files and click "Download" for each file.
@@ -116,11 +119,11 @@ There are more than 100 possible source columns, but `noaa-weather-hourly` proce
     - most columns are expected to have non-null values for every timestamp (i.e., 'DryBulbTemperature')
     - some columns are expected to have null values at some times and the null values are preserved in the output (ie., 'Precipitation', 'WindGustSpeed') 
 8. Saves a single .CSV file to the same location as the source LCD file(s) (will overwrite existing files if an identical file already exists).
-9. Output file is named "{STATION_NAME} {from_str} to {end_str} {freqstr}.csv", (ie.,
-    "CHICAGO O'HARE INTERNATIONAL 2020-01-01 to 2023-12-31_H.csv")
+9. Output file is named "{STATION_NAME} {start_MM-DD-YYYY} to {end_MM-DD-YYYY} {frequency}.csv", (ie.,
+    "CHICAGO O'HARE INTERNATIONAL 2020-01-01 to 2023-12-31 H.csv")
 
 ### Weather Station Directory
-`noaa-weather-hourly` includes a processed 'isd-history.csv' file containing the details of ~4300 active stations and ID cross-references (ICAO, FAA, WMO, WBAN) provided by [Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt).  This data is only used to define LCD weather file location data as this is not provided in the LCD CSV itself.  The data source is updated regularly, but the version in this script is not.  If updates are needed, consider running the 'ISD History Station Table.py' to update 'data/isd-history.csv'.
+`noaa-weather-hourly` includes a processed 'isd-history.csv' file containing the details of ~11,600 active stations and ID cross-references (ICAO, FAA, WMO, WBAN) provided by [Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt).  This data is only used to weather station location details as they are not provided in the LCD CSV file.  The data source is updated regularly, but the version in this script is not.  If updates are needed, consider running the 'ISD History Station Table.py' to update 'data/isd-history.csv'.
 
 ### Limitations:
 * NOAA LCD source is for atmospheric data primarily for locations in the United States of America.
@@ -145,22 +148,22 @@ There are more than 100 possible source columns, but `noaa-weather-hourly` proce
 * [Degree Days.net](https://www.degreedays.net/) - Excellent reference for weather-related energy engineering analysis    
 
 ## Example Alternative Observed Weather Data Sources
-http://weather.whiteboxtechnologies.com/hist<BR>
-https://openweathermap.org/history<BR>
-https://docs.synopticdata.com/services/weather-data-api<BR>
-https://mesowest.utah.edu/<BR>
-https://registry.opendata.aws/noaa-isd/<BR>
-https://www.ncei.noaa.gov/products/land-based-station/integrated-surface-database<BR>
-https://registry.opendata.aws/noaa-isd/<BR>
+* http://weather.whiteboxtechnologies.com/hist<BR>
+* https://openweathermap.org/history<BR>
+* https://docs.synopticdata.com/services/weather-data-api<BR>
+* https://mesowest.utah.edu/<BR>
+* https://registry.opendata.aws/noaa-isd/<BR>
+* https://www.ncei.noaa.gov/products/land-based-station/integrated-surface-database<BR>
+* https://registry.opendata.aws/noaa-isd/<BR>
 
 ## Related Weather & Energy Model Code
-https://github.com/celikfatih/noaa-weather<BR>
-https://github.com/cagledw/climate_analyzer<BR>
-https://pypi.org/project/diyepw/<BR>
-https://github.com/GClunies/noaa_coops<BR>
-https://github.com/DevinRShaw/simple_noaa<BR>
-https://github.com/awslabs/amazon-asdi/tree/main/examples/noaa-isd<BR>
-https://pypi.org/project/climate-analyzer<BR>
+* https://github.com/celikfatih/noaa-weather<BR>
+* https://github.com/cagledw/climate_analyzer<BR>
+* https://pypi.org/project/diyepw/<BR>
+* https://github.com/GClunies/noaa_coops<BR>
+* https://github.com/DevinRShaw/simple_noaa<BR>
+* https://github.com/awslabs/amazon-asdi/tree/main/examples/noaa-isd<BR>
+* https://pypi.org/project/climate-analyzer<BR>
 
 
 
@@ -185,6 +188,6 @@ In both cases, __the estimation of performance improvements is only valid if the
 The solution to aligning the results of a model made with one set of weather values and actual results resulting from a different set of values is to weather-normalize the results.  This normalization process is only possible if both the typical and actual weather values are available.  Once the modeled and actual results are aligned (ie. the influence of weather variance is removed) the difference in expected and actual performance can be evaluated in detail.
 
 ### Availability of Free Weather Data
-Otaining good, _usable_ data that is already available in the public domain is not necessarily easy or free of cost.  `noaa-weather-hourly` was created to facilitate convenient, free usage of limited volumes of hourly USA weather published by NOAA as a convenient .CSV file.  
+Otaining good, _usable_ data that is already available in the public domain is not necessarily easy or free of cost.  `noaa-weather-hourly` was created to facilitate convenient, free usage of limited volumes of hourly observed weather published by NOAA as a convenient .CSV file.  
 
-There are numerous subscription or purchase-based [sources of historical weather]('#example-alternative-observed-weather-data-sources'), and many offer API access.  These sources may be preferable when many locations are needed and/or the data need to be updated frequently.
+There are numerous subscription or purchase-based [sources of historical weather](#example-alternative-observed-weather-data-sources), and many offer API access.  These sources may be preferable when many locations are needed and/or the data need to be updated frequently.
