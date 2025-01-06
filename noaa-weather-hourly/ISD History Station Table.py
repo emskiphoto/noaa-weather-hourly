@@ -30,6 +30,7 @@
 
 from pandas import DataFrame, to_datetime
 from urllib.request import urlopen
+from pathlib import Path
 
 # single source of input
 target_url = 'https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt'
@@ -58,7 +59,8 @@ isd_history_defintions_txt = '\n'.join(lines[:idx_header])
 # print(isd_history_defintions_txt)
 
 # Open the file in write mode
-with open("../../src/data/isd_history_defintions.txt", "w") as file:
+dir_cwd = Path.cwd()
+with open(dir_cwd / "isd_history_defintions.txt", "w") as file:
   # Write the text to the file
   file.write(isd_history_defintions_txt)
 
@@ -98,9 +100,14 @@ for line_ in lines_table:
 # store records in a dataframe
 df = DataFrame.from_records(records, columns=col_names)
 
-# ### Remove records with no 'WBAN' value
-filter_wban = df['WBAN'].str.len().gt(4)
-df = df.loc[filter_wban]
+# ### Remove records with neither a 'WBAN' or 'CALL' value
+# non-USA locations that can be referenced using 'CALL'
+# USA locations use WBAN
+filter_wban = df['WBAN'].ne('99999')
+filter_call = df['CALL'].str.strip().str.len().eq(4)
+filter_wban_or_call = filter_wban | filter_call
+# df = df.loc[filter_wban]
+df = df.loc[filter_wban_or_call]
 
 # ### Format 'BEGIN', 'END' as datetime
 # discard rare non-conforming values
@@ -109,15 +116,20 @@ for col_ in cols_datetime:
 #     for values with whitespaces, choose the second group as input
     df[col_] = to_datetime(df[col_].str.split().str[-1], errors='coerce')
 
+#     important that 'CALL' and 'WBAN' have no whitespaces
+df['CALL'] = df['CALL'].str.strip()
+df['WBAN'] = df['WBAN'].str.strip()
 df = df.sort_values(by=['USAF', 'BEGIN'], ascending=[True, False])
 df.set_index('USAF', drop=True, inplace=True)
+df.dropna(subset = ['BEGIN','END'], how='all', inplace=True)
+# #### Reduce df to only locations with a non 99999 WBAN value - DON'T use
+# this excludes non-USA locations.
+# filter_wban_99999 = df['WBAN'].eq('99999')
+# display(df.shape)
+# df = df.loc[~filter_wban_99999]
 
-# #### Reduce df to only locations with a non 99999 WBAN value
-filter_wban_99999 = df['WBAN'].eq('99999')
-display(df.shape)
-df = df.loc[~filter_wban_99999]
-
-# save as 'isd_history.csv' to 'data' folder in 'src'
-df.to_csv("../../src/data/isd-history.csv')
+# save as 'isd_history.csv' to cwd (this avoids overwriting existing in 'data' but 
+# requires manually moving the file(s) after completion)
+df.to_csv(dir_cwd / "isd-history.csv")
 # END
 

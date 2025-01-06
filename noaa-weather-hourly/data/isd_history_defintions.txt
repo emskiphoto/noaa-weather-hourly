@@ -1,4 +1,4 @@
-Integrated Surface Database Station History, December 2024
+Integrated Surface Database Station History, January 2025
 
 USAF = Air Force station ID. May contain a letter in the first position.
 WBAN = NCDC WBAN number

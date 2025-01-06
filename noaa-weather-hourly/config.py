@@ -20,10 +20,12 @@ version_pattern_lcd_input = {idx_ : v_ for idx_, v_ in enumerate(patterns_lcd_in
 
 # file naming conventions
 pattern_isd_history_file = r'isd-history.csv|ISD-HISTORY.CSV'
-file_output_format = """{STATION_NAME} {from_str} to {end_str} {freqstr}.csv"""
+file_output_format = """{STATION_NAME} {start_str} to {end_str} {freqstr}.csv"""
 
 # Parameters
 pct_null_timestamp_max = 0.5
+max_records_to_interpolate = 24
+
 freqstr_frequency = {'D': 'Daily',
 'W': 'Weekly',
 'M': 'Monthly',
@@ -31,7 +33,6 @@ freqstr_frequency = {'D': 'Daily',
 'Y': 'Yearly',
 'H': 'Hourly',
 'T': 'Minutely',
-'S': 'Secondly',
 'MS': 'Month Start',
 'ME': 'Month End',
 'QS': 'Quarter Start',
