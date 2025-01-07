@@ -14,6 +14,7 @@ import pandas as pd
 import csv
 import pathlib
 import re
+# to read resources from the directories of this package
 import importlib.resources
 # import modules specific to this package 
 from config import *
@@ -46,42 +47,29 @@ if args.frequency != None:
 if args.filename != None:
     filename = args.filename
     
-# print(freqstr)
-
 # ## Locations
 # dir_cwd is where the command was entered and where files will be output to
 dir_cwd = pathlib.Path.cwd()
-
-# # Access a file in the data directory
-# with importlib.resources.path("your_package.data", "data_file.txt") as data_file_path:
-#     with open(data_file_path) as f:
-#         data = f.read()
 
 # #### Are there any .CSV files of any naming format?
 # If not, stop the script, there is nothing to do without the local .csv's.
 # pretty name of directory
 dir_cwd_posix = dir_cwd.as_posix()
 
-
-
-
 # this is the dir where input files will be read from.  It will be defined as
 # either dir_cwd or dir_filename based on the outcome of the next steps
 dir_source = None
 dir_filename = None
-# if 'filename' was provided, use filename.
-# if 'filename' was not provided, review available .csv's in dir_cwd.
-# if some .csv files are present, continue.  
+# if 'filename' was provided, use filename. if 'filename' was not provided, 
+# review available .csv's in dir_cwd. if some .csv files are present, continue.  
 # Otherwise halt process and inform user.
 if filename == '':
     dir_source = dir_cwd
     dir_source_posix = dir_source.as_posix()
     dir_csv_files = sorted([f_.name for f_ in dir_source.glob('*.csv') if f_.is_file()])
     if len(dir_csv_files) >= 1:
-#         dir_source = dir_cwd
         pass
         # list of all .csv files in dir_cwd
-#         dir_csv_files = sorted([f_.name for f_ in dir_cwd.glob('*.csv') if f_.is_file()])
     else:
         message_ = message_no_csv_files_found.format(
             dir_source_posix = dir_cwd_posix)
@@ -127,11 +115,11 @@ print(message_all_csv_files_found.format(
 version_files = {v_ : find_files_re_pattern_sorted_last_modified(dir_source, pattern_) for
                  v_, pattern_ in version_pattern_lcd_input.items()}
 
-# what if no files were found? or one file? 
-# return message and halt process
+
 # which files matched lcd patterns, regardless of version or date?
 files_pattern_match = [x for xs in version_files.values() for x in xs]
 
+# what if no files were found? or one file? return message and halt process
 if len(files_pattern_match) < 1:
     message_ = message_no_lcd_files_found.format(dir_source_posix = dir_source_posix,
                                  patterns_lcd_examples_str = patterns_lcd_examples_str,
@@ -140,7 +128,7 @@ if len(files_pattern_match) < 1:
 #     abort process
     exit()
 
-# find most recently modified file by lcd version
+# find most recently modified file by lcd version number
 version_file_last_modified = {version_ : files_[0] if len(files_) > 0 else None for version_, files_ in version_files.items()}
 
 # 2. find the most recent file
@@ -187,7 +175,7 @@ else:
 # string version of filenames from files_lcd_input as vertical list
 files_lcd_input_names_str = "\n".join([f_.name for f_ in files_lcd_input])
 
-# read only headers of each file in files_lcd_input
+# read headers only of each file in files_lcd_input
 files_columns = {}
 for file_ in files_lcd_input:
     try:
@@ -215,8 +203,180 @@ files_usecols = {file_ : cols_ for file_, cols_ in files_usecols.items()
 # reduce files_usecols to only columns used in this process
 files_usecols = {file_ : sorted(set(cols_noaa_processed).intersection(set(cols_))) for
                  file_, cols_ in files_usecols.items()}
-print(files_usecols)
+# print(files_usecols)
+
+# ### Create df from files_usecols
+df = pd.concat((pd.read_csv(f_, usecols=cols_, parse_dates=['DATE'],
+                            index_col='DATE', low_memory=False) for
+                f_, cols_ in files_usecols.items()), axis=0)\
+                .reset_index().drop_duplicates()
+df = df.set_index('DATE', drop=True).sort_index()
+# optional - display table head
+# print(df.head())  
+
+# keep track of the count of raw timestamps prior to processing
+n_records_raw = df.shape[0]
+# track statistics by column prior to processing, omit 'Sunrise' & 'Sunset' from stats
+cols_sunrise_sunset = df.columns.intersection(cols_sunrise_sunset).tolist()
+df_stats_pre = df.loc[:, df.columns.difference(cols_sunrise_sunset)].describe()
+
+# ### Identify and Display Weather Station Information
+# use most frequent STATION id from df
+station_lcd = str(df['STATION'].value_counts().index[0])
+# v1 - identify WBAN station - this is index for the isd-history table
+station_wban = station_lcd[6:]
+# v2 - identify CALL station  - needed for non-USA locations with 99999 WBAN
+station_call = station_lcd[-4:] 
+
+# remove 'STATION', 'REPORT_TYPE', 'SOURCE' columns - not needed anymore
+df.drop(columns=['STATION', 'REPORT_TYPE', 'SOURCE'],
+        inplace=True, errors='ignore')
+
+# #### Open local 'isd-history.csv' containing Station location/identification
+# information stored in 'data' folder.  source:  https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt.  Created/updated manually with 'ISD History Station Table.py'.
+
+# print(list(pathlib.Path.cwd().glob('*')))
+dir_data = dir_cwd / 'noaa-weather-hourly/data'
+
+path_isd_history = dir_data / file_isd_history
+# assert path_isd_history.is_file()
+df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
+                     dtype={'WBAN': object}).sort_values(
+                    by=['USAF', 'BEGIN'], ascending=[True, False])
+
+# NEED TO FIGURE OUT HOW TO USE IMPORTLIB.RESOURCES!!
+# # # Access a file in the noaa-weather-history package 'data' directory (not a relative, local, 'data' dir)
+# def read_isd_history(file):
+#     """Read isd-history CSV file from 'data' directory of Python package."""
+# #     data_res = importlib.resources.files("noaa-weather-hourly") / "data"
+#     data_res = importlib.resources.files("noaa-weather-hourly") / "data"
+#     with importlib.resources.as_file(data_res / file) as f:
+#         df = pd.read_csv(f)
+#     return df
+
+# df_isd_history = read_isd_history(file_isd_history)
+
+# def read_csv_from_package(package_name, resource_name):
+#     """Reads a CSV file from a Python package using importlib.resources."""
+
+#     with importlib.resources.open_text(package_name, resource_name) as f:
+#         return pd.read_csv(f)
+#         reader = csv.reader(f)
+#         for row in reader:
+#             print(row)
+
+# Example usage:
+# df_isd_history = read_csv_from_package("noaa-weather-hourly", file_isd_history)
 
 
+# with importlib_resources.files("noaa-weather-hourly") / "data" / file_isd_history as isd_history:
+    
 
 
+# with importlib.resources.path("noaa-weather-hourly-cli.data", file_isd_history) as data_isd_history_path:
+#     with open(data_isd_history_path, 'r') as f:
+# #         reader_isd = csv.reader(f)
+#         df_isd_history = pd.read_csv(f, index_col='WBAN',
+#                      dtype={'WBAN': object}).sort_values(
+#                     by=['USAF', 'BEGIN'], ascending=[True, False])
+
+# # #### Create df_isd_history for Station Detail lookup
+# # df_isd_history = pd.read_csv(reader_isd, index_col='WBAN',
+# #                      dtype={'WBAN': object}).sort_values(
+# #                     by=['USAF', 'BEGIN'], ascending=[True, False])
+      
+
+# is the station WBAN listed in df_isd_history?
+station_details_available_wban = station_wban in df_isd_history.index
+
+# is the station CALL listed in df_isd_history?
+station_details_available_call = station_call in df_isd_history['CALL'].values
+
+# create station_details using either WBAN or CALL as index lookup
+if station_details_available_wban:
+    station_details = dict(df_isd_history.loc[station_wban].reset_index()\
+                       .sort_values('END', ascending=False).iloc[0])
+elif station_details_available_call:
+    station_details = dict(df_isd_history.loc[
+                        df_isd_history['CALL'] == station_call]\
+                       .reset_index().sort_values('END',
+                          ascending=False).iloc[0])
+else:
+#     if station_lcd has no reference in df_isd_history...create empty dictionary
+    station_details = {col_ : 'Unknown' for col_ in df_isd_history.columns}
+
+# add google maps url to LAT LON
+if station_details['LAT'] != 'Unknown':
+     # add url to google maps search of lat, lon values to station_details
+    google_maps_lat_lon_url = """https://maps.google.com/?q={lat},{long}"""
+    google_maps_url = google_maps_lat_lon_url.format(lat = station_details['LAT'],
+                                                    long = station_details['LON'])
+    station_details['GOOGLE MAP'] = google_maps_url
+
+# delete df_isd_history - no longer needed
+del df_isd_history
+    
+print(station_details)
+
+#     create timestamps from consolidated table df
+start_dt = df.index[0]
+end_dt = df.index[-1]
+start_str = start_dt.strftime('%Y-%m-%d')
+end_str = end_dt.strftime('%Y-%m-%d')
+
+# identify hourly timestamps where the LCD source reported no observations
+# This will be added as a boolean column later
+idx_hours_no_source_data = pd.date_range(start_dt, end_dt, freq='H')\
+                            .difference(df.index.round('H'))
+# how many hours of the curent time range have no observations?
+n_hours_no_source_data = len(idx_hours_no_source_data)
+
+# individually process all columns in df to be numeric --> float
+for col_ in df.columns:
+    df[col_] = pd.to_numeric(df[col_], errors='coerce')
+    try:
+        df[col_] = df[col_].astype(float)
+    except:
+        pass
+    
+ # if a single timestamp appears more than once, average available values
+# to return a single value and single timestamp (ignoring 
+# NaN values of course)
+df = df.groupby(level=0).mean()
+
+# #### Extract Sunrise and Sunset by date in to dictionaries
+# dicionaries to be applied to df_out towards end of script.
+# The source data provides only one unique sunrise/set value per day and
+# the rest of the day's values are NaN
+
+# create date_sunrise/sunset dictionaries with dates as keys and 
+# timestamp values for time to be added back in to resampled df
+date_sunrise = datetime_from_HHMM(df['Sunrise'].dropna()).to_dict()
+date_sunset = datetime_from_HHMM(df['Sunset'].dropna()).to_dict()
+
+# drop sunrise/sunset columns as their information is now 
+# contained in the date_sunrise/sunset dictionaries
+df.drop(columns=cols_sunrise_sunset, inplace=True, errors='ignore')
+
+# #### are there timestamps that have a high count of null values?
+# In v1 LCD files the '23:59:00' timestamp is suspect and appears to only be a placeholder
+# for posting sunrise/sunset times.  Important that this step be done after
+# forward filling sunrise/sunset values. 
+# V2 LCD files do not seem to have the '23:59:00' timestamp issue.
+
+n_max_null = int(pct_null_timestamp_max * df.shape[0])
+
+temp = df.loc[:, df.columns.difference(cols_sunrise_sunset)]
+df_nan_ts = temp.groupby(temp.index.time).apply(lambda x: x.isna().sum()\
+                            .gt(n_max_null)).all(axis=1)
+times_nan = df_nan_ts.loc[df_nan_ts].index.tolist()
+del temp
+del df_nan_ts
+
+# remove records for timestamps with a high percentage of Null values.
+# note that the '23:59:00' timestamp is suspect and appears to only be a placeholder
+# for posting sunrise/sunset times.  Important that this step be done after
+# forward filling sunrise/sunset values.
+filter_nan_times = pd.Series(df.index.time).isin(times_nan).values
+df = df.loc[~filter_nan_times]
+print(df.info())
