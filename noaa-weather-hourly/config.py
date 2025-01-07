@@ -20,6 +20,7 @@ version_pattern_lcd_input = {idx_ : v_ for idx_, v_ in enumerate(patterns_lcd_in
 
 # file naming conventions
 pattern_isd_history_file = r'isd-history.csv|ISD-HISTORY.CSV'
+file_isd_history = 'isd-history.csv'
 file_output_format = """{STATION_NAME} {start_str} to {end_str} {freqstr}.csv"""
 
 # Parameters
@@ -52,6 +53,7 @@ cols_noaa_processed = ['DATE', 'STATION',
 # need a list of columns with data that excludes 'DATE' and 'STATION'
 cols_date_station = ['DATE', 'STATION']
 cols_data = [col_ for col_ in cols_noaa_processed if col_ not in cols_date_station]
+cols_sunrise_sunset = ['Sunrise', 'Sunset']
 
 # Messages
 message_all_csv_files_found = """The following .CSV files were found in '{dir_source_posix}':
