@@ -54,11 +54,11 @@ cols_date_station = ['DATE', 'STATION']
 cols_data = [col_ for col_ in cols_noaa_processed if col_ not in cols_date_station]
 
 # Messages
-message_all_csv_files_found = """The following .CSV files were found in '{dir_posix}':
+message_all_csv_files_found = """The following .CSV files were found in '{dir_source_posix}':
 {dir_csv_files_str}\n"""
 
 message_no_csv_files_found = """***  PROCESS ABORTED  ***\n\nNo .CSV-format files found in:
-'{dir_cwd_posix}'\n
+'{dir_source_posix}'\n
 noaa-weather-hourly must be executed in a directory that contains original LCD-format file(s)
 from NOAA.  Copy NOAA files to the current directory or
 execute noaa-weather-hourly in a directory that contains NOAA LCD CSV files.
@@ -72,10 +72,17 @@ https://github.com/emskiphoto/noaa-weather-hourly
 """
 
 message_no_lcd_files_found = """***  PROCESS ABORTED  ***\n\nNo LCD-format file names found in:
-'{dir_data_posix}'\n
+'{dir_source_posix}'\n
 noaa-weather-hourly must be executed in a directory that contains original LCD-format file(s)
 from NOAA whose name(s) have not been changed.  Copy NOAA files to the current directory or
 execute noaa-weather-hourly in a directory that contains NOAA files.
 \nExample LCD file names:\n'{patterns_lcd_examples_str}'
 \nFiles in current directory:
-{dir_data_csv_files_str}"""
+{dir_csv_files_str}
+
+NOAA LCD files can be obtained from the following sources:
+- https://www.ncdc.noaa.gov/cdo-web/datatools/lcd
+- https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2
+
+For further detail, refer to:
+https://github.com/emskiphoto/noaa-weather-hourly"""
