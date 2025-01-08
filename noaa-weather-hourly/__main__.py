@@ -211,14 +211,22 @@ df = pd.concat((pd.read_csv(f_, usecols=cols_, parse_dates=['DATE'],
                 f_, cols_ in files_usecols.items()), axis=0)\
                 .reset_index().drop_duplicates()
 df = df.set_index('DATE', drop=True).sort_index()
-# optional - display table head
-# print(df.head())  
+
+# individually process all columns in df to be numeric --> float
+cols_numeric_stats = df.columns.difference(cols_sunrise_sunset + cols_date_station)
+for col_ in cols_numeric_stats:
+# for col_ in df.columns:
+    df[col_] = pd.to_numeric(df[col_], errors='coerce')
+    try:
+        df[col_] = df[col_].astype(float)
+    except:
+        pass
 
 # keep track of the count of raw timestamps prior to processing
 n_records_raw = df.shape[0]
 # track statistics by column prior to processing, omit 'Sunrise' & 'Sunset' from stats
 cols_sunrise_sunset = df.columns.intersection(cols_sunrise_sunset).tolist()
-df_stats_pre = df.loc[:, df.columns.difference(cols_sunrise_sunset)].describe()
+df_stats_pre = df.loc[:, cols_numeric_stats].describe()
 
 # ### Identify and Display Weather Station Information
 # use most frequent STATION id from df
@@ -240,6 +248,7 @@ dir_data = dir_cwd / 'noaa-weather-hourly/data'
 
 path_isd_history = dir_data / file_isd_history
 # assert path_isd_history.is_file()
+# # #### Create df_isd_history for Station Detail lookup
 df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
                      dtype={'WBAN': object}).sort_values(
                     by=['USAF', 'BEGIN'], ascending=[True, False])
@@ -280,11 +289,6 @@ df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
 #                      dtype={'WBAN': object}).sort_values(
 #                     by=['USAF', 'BEGIN'], ascending=[True, False])
 
-# # #### Create df_isd_history for Station Detail lookup
-# # df_isd_history = pd.read_csv(reader_isd, index_col='WBAN',
-# #                      dtype={'WBAN': object}).sort_values(
-# #                     by=['USAF', 'BEGIN'], ascending=[True, False])
-      
 
 # is the station WBAN listed in df_isd_history?
 station_details_available_wban = station_wban in df_isd_history.index
@@ -316,8 +320,6 @@ if station_details['LAT'] != 'Unknown':
 # delete df_isd_history - no longer needed
 del df_isd_history
     
-print(station_details)
-
 #     create timestamps from consolidated table df
 start_dt = df.index[0]
 end_dt = df.index[-1]
@@ -331,13 +333,13 @@ idx_hours_no_source_data = pd.date_range(start_dt, end_dt, freq='H')\
 # how many hours of the curent time range have no observations?
 n_hours_no_source_data = len(idx_hours_no_source_data)
 
-# individually process all columns in df to be numeric --> float
-for col_ in df.columns:
-    df[col_] = pd.to_numeric(df[col_], errors='coerce')
-    try:
-        df[col_] = df[col_].astype(float)
-    except:
-        pass
+# individually process all columns in df to be numeric --> float - MOVED TO ABOVE
+# for col_ in df.columns:
+#     df[col_] = pd.to_numeric(df[col_], errors='coerce')
+#     try:
+#         df[col_] = df[col_].astype(float)
+#     except:
+#         pass
     
  # if a single timestamp appears more than once, average available values
 # to return a single value and single timestamp (ignoring 
@@ -351,8 +353,20 @@ df = df.groupby(level=0).mean()
 
 # create date_sunrise/sunset dictionaries with dates as keys and 
 # timestamp values for time to be added back in to resampled df
-date_sunrise = datetime_from_HHMM(df['Sunrise'].dropna()).to_dict()
-date_sunset = datetime_from_HHMM(df['Sunset'].dropna()).to_dict()
+# date_sunrise = datetime_from_HHMM(df['Sunrise'].dropna()).to_dict()
+# date_sunset = datetime_from_HHMM(df['Sunset'].dropna()).to_dict()
+
+# # create date_sunrise/sunset dictionaries with dates as keys and 
+# # timestamp values for time to be added back in to resampled df
+temp_sunrise = df['Sunrise'].dropna()
+temp_sunrise.index = temp_sunrise.index.floor('D')
+date_sunrise = datetime_from_HHMM(temp_sunrise).to_dict()
+del temp_sunrise
+
+temp_sunset = df['Sunset'].dropna()
+temp_sunset.index = temp_sunset.index.floor('D')
+date_sunset = datetime_from_HHMM(temp_sunset).to_dict()
+del temp_sunset
 
 # drop sunrise/sunset columns as their information is now 
 # contained in the date_sunrise/sunset dictionaries
@@ -379,4 +393,167 @@ del df_nan_ts
 # forward filling sunrise/sunset values.
 filter_nan_times = pd.Series(df.index.time).isin(times_nan).values
 df = df.loc[~filter_nan_times]
-print(df.info())
+
+#     Check what percentage of data has null data and print to screen
+df_pct_null_data = pd.DataFrame({'% NaN - Source': df.isnull().sum().divide(len(df)).round(4)})
+df_pct_null_data_pre_formatted = df_pct_null_data['% NaN - Source']\
+                            .apply(lambda n: '{:,.2%}'.format(n))
+# remove 'Hourly' prefix for display only
+col_rename_remove_hourly = {col_ : col_.replace('Hourly', '') for
+                            col_ in df_pct_null_data_pre_formatted.index}
+
+# #### Display Station Details
+# exclude station lifetime BEGIN, END history dates - could cause confusion
+station_details_exclude = ['BEGIN', 'END']
+station_details_display = {k_ : v_ for k_, v_ in station_details.items() if
+                           k_ not in station_details_exclude}
+
+print('--------------------------------------------')
+print('------ ISD Weather Station Properties ------')
+print('--------------------------------------------')
+for k_, v_ in station_details_display.items():
+    print("{:<15} {:<10}".format(k_, v_))
+print('\n')
+
+# ### Resample Hourly
+# individually resample each column on an hourly frequency.
+# This will produce series
+# with perfect, complete datetime indexes.  However, it is quite
+# possible that NaN values will remain (ie. a contiguous 3-hour
+# period of NaN values).  Remaining NaN values will
+# be resolved through interpolation later in the script.
+# this method is used because NaN values can appear at different timestamps
+# in each column
+# at this point the df should contain only numeric data
+dfs = {}
+for col_ in df.columns:
+    dfs[col_] = df[col_].dropna().resample('H').mean()
+    
+# ### Create df_out - the beginning of the final output
+# join the resampled series from the previous step, remove any
+# duplicates and ensure the index is recognized as hourly frequency.
+# df_out = pd.concat(dfs, axis=1).drop_duplicates().asfreq('H')
+# important to enforce dtype 'float' as 'HourlyRelativeHumidity' and 
+# other columns had a 'Float64' (capital 'F') that generated
+# errors in interpolation step.
+df_out = pd.concat(dfs, axis=1).drop_duplicates()\
+                .asfreq('H').astype(float)
+del dfs
+del df
+
+# ### Interpolate Null Values
+# According to the following parameters:
+# Because observed weather data commonly contains gaps (ie., NaN or null values), noaa-weather-hourly will attempt to fill in any such gaps to ensure that in each record a value is present for all of the hourly timestamps. To do so, it will use time-based interpolation for gaps up to a default value of 24 hours long ('max_records_to_interpolate').  For example if the dry bulb temperature has a gap with neighboring observed values like (20, X, X, X, X, 25), noaa-weather-hourly will replace the missing values to give (20, 21, 22, 23, 24, 25).
+# 
+# If a gap exists in the data that is larger than max_records_to_interpolate, NaN values will be left untouched and a complete datetime index will be preserved.
+df_out = df_out.interpolate(method='time',
+            limit = max_records_to_interpolate)
+
+# ### Optional Frequency Resample
+# If the freqstr is not 'H', resample.  
+run_resample = False
+# If the freqstr is not the default 'H', run the resample process
+if freqstr != 'H':
+    run_resample = True
+# If the input freqstr is higher than 'H', resample and interpolate, else resample using mean.
+resample_interpolate = False
+#     what is the delta value of the input freqstr? 
+freqstr_delta = pd.date_range(start_dt, periods=100,
+                           freq=freqstr).freq.delta
+
+# If the input freqstr is higher frequency 
+# than df_out, resample using interpolation
+resample_interpolate = freqstr_delta < df_out.index.freq.delta
+
+# shall we proceed with additional resampling?
+if run_resample:
+    if resample_interpolate:
+        #     resample via interpolation
+        df_out = df_out.resample(freqstr).interpolate()
+# or resample using mean
+    elif not resample_interpolate:
+        df_out = df_out.resample(freqstr).mean()
+    
+# ### Pre- Post-Processing Statistical Comparison
+# create general statistics on post-processed dataset for
+# comparison with pre-processed dataset to understand how/if 
+# processing significantly altered series values
+df_stats_post = df_out[df_stats_pre.columns].describe()
+# Create df_mean_comp containing comparison of mean values of source and processed numeric columns 
+df_mean_comp = pd.concat([df_stats_pre.loc['mean'].T, df_stats_post.loc['mean'].T],
+                         axis=1, keys=['Source Mean', 'Processed Mean']).round(2)\
+                            .rename(index=col_rename_remove_hourly)
+df_mean_comp['% Difference'] = df_mean_comp.pct_change(axis=1).iloc[:,-1]\
+                                .fillna(0).round(4)\
+                                .apply(lambda n: '{:,.2%}'.format(n))
+
+#     Check what percentage of data has null data and print to screen
+df_pct_null_data_post = pd.DataFrame({'% NaN - Processed': df_out.isnull()\
+                              .sum().divide(len(df_out)).round(4)})
+df_pct_null_data_post_formatted = df_pct_null_data_post['% NaN - Processed']\
+                                .apply(lambda n: '{:,.2%}'.format(n))
+# print(df_pct_null_data_post_formatted.rename(
+#                 index = col_rename_remove_hourly))
+# Create df_pct_null_comp containing comparison of pct null values before and after processing
+df_pct_null_comp = pd.concat([df_pct_null_data_pre_formatted, 
+                             df_pct_null_data_post_formatted], 
+                            axis=1).rename(index=col_rename_remove_hourly)
+
+# Create df_comp containing pct null and mean values
+df_comp = df_pct_null_comp.join(df_mean_comp)
+
+message_ = message_pct_null_data.format(
+                files_lcd_input_names_str = files_lcd_input_names_str,
+                start_str = start_str,
+                end_str = end_str)
+print(message_)
+
+print('----------------------------------------------------------------')
+print('---- Percent Null Values by Column:  Source vs Processed ------')
+print('----------------------------------------------------------------')
+# print(df_pct_null_comp)
+print(df_comp)
+
+# Round df_out to 1 decimal place
+df_out = df_out.round(2)
+
+# ### Add Sunrise/Sunset timestamps to df_out
+# apply date_sunrise/sunset dictionary to df_out index to create sunrise/sunset columns
+for col_, dict_ in zip(cols_sunrise_sunset, [date_sunrise, date_sunset]):
+    if len(dict_) > 1:
+        df_out[col_] = pd.DataFrame.from_dict(dict_, orient='index')\
+                    .reindex(df_out.index).ffill().astype('datetime64[s]')
+    else:
+        df_out[col_] = pd.NaT
+# cleanup
+del date_sunrise, date_sunset
+
+# add column to document hourly obervations where no source data was provided.
+df_out['No source data'] = df_out.index.isin(idx_hours_no_source_data)
+
+# #### Rename Columns - remove 'hourly' from names
+df_out.rename(columns=col_rename_remove_hourly, errors='ignore',
+             inplace=True)
+
+# #### Name export file 
+# Save output file to current working directory (ie,
+# where command line command was entered).  Revise STATION NAME to permit save to disk on typical OS.
+file_out_name = file_output_format.format(
+            STATION_NAME = slugify(station_details['STATION NAME']),
+            start_str = start_str,
+            end_str = end_str,
+            freqstr = freqstr)
+file_out = dir_cwd / file_out_name
+# what if file name is too long for current OS? - TO-DO
+# file_out.as_posix().__len__()
+
+# #### Save df_out to csv as file_out
+df_out.to_csv(file_out)
+assert file_out.is_file()
+print(f"""\nProcessed File Saved to: {file_out.as_posix()}\n
+{''.join(80 * ['*'])}
+          ***************       PROCESS COMPLETE       ***************
+{''.join(80 * ['*'])}""")
+# ### Cleanup
+del df_out
+exit()
