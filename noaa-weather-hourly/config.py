@@ -56,12 +56,12 @@ cols_data = [col_ for col_ in cols_noaa_processed if col_ not in cols_date_stati
 cols_sunrise_sunset = ['Sunrise', 'Sunset']
 
 # Messages
-message_all_csv_files_found = """The following .CSV files were found in '{dir_source_posix}':
+message_all_csv_files_found = """\nThe following .CSV files were found in '{dir_source_posix}':
 {dir_csv_files_str}\n"""
 
 message_no_csv_files_found = """***  PROCESS ABORTED  ***\n\nNo .CSV-format files found in:
 '{dir_source_posix}'\n
-noaa-weather-hourly must be executed in a directory that contains original LCD-format file(s)
+noaa-weather-hourly must be executed in a directory that contains original v1 or v2 LCD-format file(s)
 from NOAA.  Copy NOAA files to the current directory or
 execute noaa-weather-hourly in a directory that contains NOAA LCD CSV files.
 
@@ -88,3 +88,6 @@ NOAA LCD files can be obtained from the following sources:
 
 For further detail, refer to:
 https://github.com/emskiphoto/noaa-weather-hourly"""
+
+message_pct_null_data = """Percent Missing Values by Column from {start_str} to {end_str} for LCD source file(s):
+{files_lcd_input_names_str}"""

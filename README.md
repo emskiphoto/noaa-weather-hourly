@@ -25,7 +25,9 @@
 - [LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
 
 ## Installation
-This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa-weather-hourly' command available to run from any directory on the computer.
+This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa-weather-hourly' command available to run from any directory on the computer.  
+
+Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lcd-csv-file) and try to use it.  As described in [Process Details](#process-details), there can be numerous issues that complicate the use of a raw source file in spreadsheet analysis.
 
 1. __Obtain Code__ through git OR download<BR>
     a. `git clone https://github.com/emskiphoto/noaa-weather-hourly.git` at a terminal prompt (requires git installation [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
@@ -111,7 +113,7 @@ It is recommended to store downloaded files in separate folders by location.
 The `noaa-weather-hourly` makes the source LCD file ready-to-use by resolving the following data formatting and quality issues.  
 <img alt="Raw LCD file data issues" width="600px" src='images\Raw LCD file data issues.PNG' />
     
-There are more than 100 possible source columns, but `noaa-weather-hourly` processes only 'Hourly...' columns and 'Sunrise', 'Sunset' & 'DATE' columns.  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in.
+NOAA LCD files can contain more than 100 types of meteorological observations, but `noaa-weather-hourly` processes only [these output columns](#output-columns).  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in.
 
 1. Creates a copy of the source LCD file(s), leaving the source file(s) unmodified
 2. Extracts ID data and gathers additional station details
@@ -178,7 +180,7 @@ There are more than 100 possible source columns, but `noaa-weather-hourly` proce
 Weather-dependent models like building energy models generally use typical weather values to estimate a given metric for a system.  For example, typical weather values would be used to estimate the annual energy consumption of a building cooling system.  Inevitably, the actual weather the system experiences in the real world is _different_ than the weather used to create the model.  If the model is sensitive to weather the distinct typical & actual weather values will cause cumulative metrics to be different.  If the amplitude of these differences is larger than the cumulative impact of individual system elements (ex. the cooling system), it may not be possible to compare modeled and actual performance.  
 
 ### Analysis by Spreadsheet
-The use cases below often require reporting & analysis that is easy to access, distribute, understand and review.  Therefore, energy engineers often must use spreadsheet software like MS Excel, Google Sheets, etc.  `noaa-weather-hourly` is developed for to support spreadsheet analysis.  
+The use cases below often require reporting & analysis that is easy to access, distribute, understand and review.  Therefore, energy engineers often must use spreadsheet software like MS Excel, Google Sheets, etc.  `noaa-weather-hourly` was developed to support spreadsheet analysis where a single missing value can break the calculation.  
 
 ### Financial Context of Energy Models
 Many building design choices must be made before a physical building exists, and once equipment is installed, changing design choices become costly.  The installed performance will likely persist as-is for a decade or more until equipment needs to be replaced.   The building owners and the environment will feel the impact of early-stage design choices every year until equipment is changed.  Because the life-cycle cost of _operating_ the equipment may be several times larger than the _initial purchase price_, it is cost-effective to develop energy models that optimize operational cost and inform system design choices.
