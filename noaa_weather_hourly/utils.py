@@ -1,5 +1,5 @@
 # utils.py
-# noaa-weather-hourly
+# noaa_weather_hourly
 import pathlib
 import re
 import unicodedata
@@ -78,6 +78,12 @@ def slugify(value, allow_unicode=False):
     if allow_unicode:
         value = unicodedata.normalize('NFKC', value)
     else:
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
-    value = re.sub(r'[^\w\s-]', '', value.lower())
+        value = unicodedata.normalize('NFKD', value).encode('ascii',                                         'ignore').decode('ascii')
+        value = re.sub(r'[^\w\s-]', '', value.lower())
     return re.sub(r'[-\s]+', '-', value).strip('-_')
+
+def google_maps_url(lat, lon):
+    """Returns google maps URL containing lat, lon value. 
+    Example:  https://maps.google.com/?q=+33.630,-084.442"""
+    url = """https://maps.google.com/?q={lat},{long}"""
+    return url.format(lat = str(lat), long = str(lon))

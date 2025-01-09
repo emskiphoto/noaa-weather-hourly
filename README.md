@@ -1,6 +1,6 @@
-# noaa-weather-hourly
+# noaa_weather_hourly
 
-`noaa-weather-hourly` cleans historical LCD weather files from the National Oceanic and Atmospheric Administration (NOAA).  It uses a simple command line interface to generate observed hourly (and other frequency) .CSV files.  
+`noaa_weather_hourly` cleans historical LCD weather files from the National Oceanic and Atmospheric Administration (NOAA).  It uses a simple command line interface to generate observed hourly (and other frequency) .CSV files.  
 
 ## Output Columns
 * Date
@@ -22,15 +22,15 @@
 
 <img alt="Clean LCD output file" width="800px" src="images\Clean LCD output file.PNG" />
 
-- [LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
+- [LCD Weather File Documentation](noaa_weather_hourly/data/LCD_documentation.pdf)
 
 ## Installation
-This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa-weather-hourly' command available to run from any directory on the computer.  
+This is a Python script that requires a local Python installation.  The following method uses pipx for installation which makes the 'noaa_weather_hourly' command available to run from any directory on the computer.  
 
 Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lcd-csv-file) and try to use it.  As described in [Process Details](#process-details), there can be numerous issues that complicate the use of a raw source file in spreadsheet analysis.
 
 1. __Obtain Code__ through git OR download<BR>
-    a. `git clone https://github.com/emskiphoto/noaa-weather-hourly.git` at a terminal prompt (requires git installation [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
+    a. `git clone https://github.com/emskiphoto/noaa_weather_hourly.git` at a terminal prompt (requires git installation [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
     a. Simple download….<BR>
     
 2. [__Install Python__ (version 3.8 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
@@ -41,29 +41,29 @@ Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lc
     Unix/macOS:<BR>
     `python3 -m pip install --user pipx`<BR>
     `python3 -m pipx ensurepath`<BR>
-4. __Install noaa-weather-hourly 
-    `pipx install noaa-weather-hourly`
+4. __Install noaa_weather_hourly 
+    `pipx install noaa_weather_hourly`
 
 ## Usage
 Open a terminal prompt ('Powershell' in Windows).  Navigate to specific folders using the `cd folder_name` command to go up the directory tree and `cd..` to go back down the directory tree.
     
 ### Usage for specific file 
 Process the version 1 LCD file ".\data\test_file_lcd1.csv" that is included in installation.  <BR>
-$ `noaa-weather-hourly ".\data\test_file_lcd1.csv"`
+$ `noaa_weather_hourly ".\data\test_file_lcd1.csv"`
 
 ### Usage for most recent file(s)
 Automatically select the newest files in the current directory based on last date modified and group all files with the same weather station ID in to a single output.<BR>
-$ `noaa-weather-hourly`
+$ `noaa_weather_hourly`
 
 ### Usage for Frequencies other than Hourly
 The default output contains Hourly frequency data.  Any of the following data frequencies can be output using the `-frequency` argument:<BR>
-$ `noaa-weather-hourly [-frequency FREQUENCY] filename`
+$ `noaa_weather_hourly [-frequency FREQUENCY] filename`
 
 For example, a 15-minute frequency output:<BR>
-$ `noaa-weather-hourly -frequency '15T' '<path_to_LCD_CSV_file>'`
+$ `noaa_weather_hourly -frequency '15T' '<path_to_LCD_CSV_file>'`
 
 Or a daily frequency output using the most recent file(s):<BR>
-$ `noaa-weather-hourly -frequency 'D'`
+$ `noaa_weather_hourly -frequency 'D'`
 
 'H':    'Hourly',
 'T':    'Minutely'
@@ -77,10 +77,10 @@ The core frequency argument can be modified for other frequencies.  For example,
 
 
 ## Download NOAA LCD .CSV file
-`noaa-weather-hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as described below.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  No account or API key is required, just an email address to receive a download link.
+`noaa_weather_hourly` takes a raw NOAA Local Climatological Data .csv-format file as input.   Download file(s) for a specific location and date range from NOAA as described below.  NOAA changed the download process & interface in 2024 to use AWS buckets for storage.  As of December 2024 the new and old methods both work.  No account or API key is required, just an email address to receive a download link.
 
 * [NOAA Data Tools: Local Climatological Data](https://www.ncdc.noaa.gov/cdo-web/datatools/lcd)
-* [LCD Weather File Documentation](noaa-weather-hourly/data/LCD_documentation.pdf)
+* [LCD Weather File Documentation](noaa_weather_hourly/data/LCD_documentation.pdf)
 * [LCD Documentation Source](https://www.ncei.noaa.gov/data/local-climatological-data/doc/LCD_documentation.pdf)
 
 It is recommended to store downloaded files in separate folders by location.   
@@ -110,10 +110,10 @@ It is recommended to store downloaded files in separate folders by location.
     - (Alternatively) Merge multiple years of data as a single large file by "+ Select" multiple files.  Then select "Output Format" csv, click on "Configure and Add" and "Add Order to Cart".  "Proceed to Cart", provide and Email address and click "Submit".  Check email inbox for a "Climate Data Online request 1234567 complete" message and download the LCD CSV file to any local folder using the "Download" link.  Do not change the name(s) of the LCD file(s).  
 
 ## Process Details
-The `noaa-weather-hourly` makes the source LCD file ready-to-use by resolving the following data formatting and quality issues.  
+The `noaa_weather_hourly` makes the source LCD file ready-to-use by resolving the following data formatting and quality issues.  
 <img alt="Raw LCD file data issues" width="600px" src='images\Raw LCD file data issues.PNG' />
     
-NOAA LCD files can contain more than 100 types of meteorological observations, but `noaa-weather-hourly` processes only [these output columns](#output-columns).  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in.
+NOAA LCD files can contain more than 100 types of meteorological observations, but `noaa_weather_hourly` processes only [these output columns](#output-columns).  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in.
 
 1. Creates a copy of the source LCD file(s), leaving the source file(s) unmodified
 2. Extracts ID data and gathers additional station details
@@ -130,13 +130,13 @@ NOAA LCD files can contain more than 100 types of meteorological observations, b
     "CHICAGO O'HARE INTERNATIONAL 2020-01-01 to 2023-12-31 H.csv")
 
 ### Weather Station Directory
-`noaa-weather-hourly` includes a processed 'isd-history.csv' file containing the details of ~11,600 active stations and ID cross-references (ICAO, FAA, WMO, WBAN) provided by [Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt).  This data is only used to weather station location details as they are not provided in the LCD CSV file.  The data source is updated regularly, but the version in this script is not.  If updates are needed, consider running the 'ISD History Station Table.py' to update 'data/isd-history.csv'.
+`noaa_weather_hourly` includes a processed 'isd-history.csv' file containing the details of ~11,600 active stations and ID cross-references (ICAO, FAA, WMO, WBAN) provided by [Historical Observing Metadata Repository (HOMR)](https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt).  This data is only used to weather station location details as they are not provided in the LCD CSV file.  The data source is updated regularly, but the version in this script is not.  If updates are needed, consider running the 'ISD History Station Table.py' to update 'data/isd-history.csv'.
 
 ### Limitations:
 * NOAA LCD source is for atmospheric data primarily for locations in the United States of America.
 * NOAA LCD data is not certified for use in litigation
-* `noaa-weather-hourly` is not an API
-* `noaa-weather-hourly` Python module does not (currently) integrate with other Python tools
+* `noaa_weather_hourly` is not an API
+* `noaa_weather_hourly` Python module does not (currently) integrate with other Python tools
 * Does not validate
 * Does not visualize
 * Processes only 'Hourly...' columns and 'Sunrise', 'Sunset' & 'DATE'
@@ -180,7 +180,7 @@ NOAA LCD files can contain more than 100 types of meteorological observations, b
 Weather-dependent models like building energy models generally use typical weather values to estimate a given metric for a system.  For example, typical weather values would be used to estimate the annual energy consumption of a building cooling system.  Inevitably, the actual weather the system experiences in the real world is _different_ than the weather used to create the model.  If the model is sensitive to weather the distinct typical & actual weather values will cause cumulative metrics to be different.  If the amplitude of these differences is larger than the cumulative impact of individual system elements (ex. the cooling system), it may not be possible to compare modeled and actual performance.  
 
 ### Analysis by Spreadsheet
-The use cases below often require reporting & analysis that is easy to access, distribute, understand and review.  Therefore, energy engineers often must use spreadsheet software like MS Excel, Google Sheets, etc.  `noaa-weather-hourly` was developed to support spreadsheet analysis where a single missing value can break the calculation.  
+The use cases below often require reporting & analysis that is easy to access, distribute, understand and review.  Therefore, energy engineers often must use spreadsheet software like MS Excel, Google Sheets, etc.  `noaa_weather_hourly` was developed to support spreadsheet analysis where a single missing value can break the calculation.  
 
 ### Financial Context of Energy Models
 Many building design choices must be made before a physical building exists, and once equipment is installed, changing design choices become costly.  The installed performance will likely persist as-is for a decade or more until equipment needs to be replaced.   The building owners and the environment will feel the impact of early-stage design choices every year until equipment is changed.  Because the life-cycle cost of _operating_ the equipment may be several times larger than the _initial purchase price_, it is cost-effective to develop energy models that optimize operational cost and inform system design choices.
@@ -196,6 +196,6 @@ In both cases, __the estimation of performance improvements is only valid if the
 The solution to aligning the results of a model made with one set of weather values and actual results resulting from a different set of values is to weather-normalize the results.  This normalization process is only possible if both the typical and actual weather values are available.  Once the modeled and actual results are aligned (ie. the influence of weather variance is removed) the difference in expected and actual performance can be evaluated in detail.
 
 ### Availability of Free Weather Data
-Otaining good, _usable_ data that is already available in the public domain is not necessarily easy or free of cost.  `noaa-weather-hourly` was created to facilitate convenient, free usage of limited volumes of hourly observed weather published by NOAA as a convenient .CSV file.  
+Otaining good, _usable_ data that is already available in the public domain is not necessarily easy or free of cost.  `noaa_weather_hourly` was created to facilitate convenient, free usage of limited volumes of hourly observed weather published by NOAA as a convenient .CSV file.  
 
 There are numerous subscription or purchase-based [sources of historical weather](#example-alternative-observed-weather-data-sources), and many offer API access.  These sources may be preferable when many locations are needed and/or the data need to be updated frequently.

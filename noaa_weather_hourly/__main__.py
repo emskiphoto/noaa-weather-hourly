@@ -312,10 +312,8 @@ else:
 # add google maps url to LAT LON
 if station_details['LAT'] != 'Unknown':
      # add url to google maps search of lat, lon values to station_details
-    google_maps_lat_lon_url = """https://maps.google.com/?q={lat},{long}"""
-    google_maps_url = google_maps_lat_lon_url.format(lat = station_details['LAT'],
-                                                    long = station_details['LON'])
-    station_details['GOOGLE MAP'] = google_maps_url
+    station_details['GOOGLE MAP'] = google_maps_url(station_details['LAT'],
+                                                    station_details['LON'])
 
 # delete df_isd_history - no longer needed
 del df_isd_history
