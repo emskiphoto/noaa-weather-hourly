@@ -1,5 +1,5 @@
 # config.py
-# noaa-weather-hourly
+# noaa_weather_hourly
 
 # command line arguments
 filename = ''
@@ -61,23 +61,23 @@ message_all_csv_files_found = """\nThe following .CSV files were found in '{dir_
 
 message_no_csv_files_found = """***  PROCESS ABORTED  ***\n\nNo .CSV-format files found in:
 '{dir_source_posix}'\n
-noaa-weather-hourly must be executed in a directory that contains original v1 or v2 LCD-format file(s)
+noaa_weather_hourly must be executed in a directory that contains original v1 or v2 LCD-format file(s)
 from NOAA.  Copy NOAA files to the current directory or
-execute noaa-weather-hourly in a directory that contains NOAA LCD CSV files.
+execute noaa_weather_hourly in a directory that contains NOAA LCD CSV files.
 
 NOAA LCD files can be obtained from the following sources:
 - https://www.ncdc.noaa.gov/cdo-web/datatools/lcd
 - https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2
 
 For further detail, refer to:
-https://github.com/emskiphoto/noaa-weather-hourly
+https://github.com/emskiphoto/noaa_weather_hourly
 """
 
 message_no_lcd_files_found = """***  PROCESS ABORTED  ***\n\nNo LCD-format file names found in:
 '{dir_source_posix}'\n
-noaa-weather-hourly must be executed in a directory that contains original LCD-format file(s)
+noaa_weather_hourly must be executed in a directory that contains original LCD-format file(s)
 from NOAA whose name(s) have not been changed.  Copy NOAA files to the current directory or
-execute noaa-weather-hourly in a directory that contains NOAA files.
+execute noaa_weather_hourly in a directory that contains NOAA files.
 \nExample LCD file names:\n'{patterns_lcd_examples_str}'
 \nFiles in current directory:
 {dir_csv_files_str}
@@ -87,7 +87,7 @@ NOAA LCD files can be obtained from the following sources:
 - https://www.ncei.noaa.gov/access/search/data-search/local-climatological-data-v2
 
 For further detail, refer to:
-https://github.com/emskiphoto/noaa-weather-hourly"""
+https://github.com/emskiphoto/noaa_weather_hourly"""
 
 message_pct_null_data = """Percent Missing Values by Column from {start_str} to {end_str} for LCD source file(s):
 {files_lcd_input_names_str}"""
