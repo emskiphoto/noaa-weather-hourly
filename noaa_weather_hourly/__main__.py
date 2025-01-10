@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# # noaa-weather-hourly
+# # noaa_weather_hourly
 # This script cleans and formats a manually downloaded National Oceanic and Atmospheric Administration (NOAA) Local Climatological Data (LCD) CSV weather file.  
 #     
 # Copyright Matt Chmielewski<BR>
-# https://github.com/emskiphoto/noaa-weather-hourly
-# January 6, 2025
-
-# Load Python packages
-import argparse
+# https://github.com/emskiphoto/noaa_weather_hourly
+# January 10, 2025
+# Load Pandas
 import pandas as pd
+# Load pure Python packages
+import argparse
 import csv
 import pathlib
 import re
@@ -21,7 +21,7 @@ from config import *
 from utils import *
 
 # Capture command line arguments
-parser = argparse.ArgumentParser(description="""noaa-weather-hourly - for processing raw NOAA LCD observed weather .csv files.
+parser = argparse.ArgumentParser(description="""noaa_weather_hourly - for processing raw NOAA LCD observed weather .csv files.
 
 # Usage for specific file:
 Process the version 1 LCD file "./data//3876540.csv" that is included in installation.
@@ -250,26 +250,26 @@ df.drop(columns=['STATION', 'REPORT_TYPE', 'SOURCE'],
 # information stored in 'data' folder.  source:  https://www.ncei.noaa.gov/pub/data/noaa/isd-history.txt.  Created/updated manually with 'ISD History Station Table.py'.
 
 # print(list(pathlib.Path.cwd().glob('*')))
-dir_data = dir_cwd / 'noaa-weather-hourly/data'
+dir_data = dir_cwd / 'noaa_weather_hourly/data'
 
-path_isd_history = dir_data / file_isd_history
-# assert path_isd_history.is_file()
-# # #### Create df_isd_history for Station Detail lookup
-df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
-                     dtype={'WBAN': object}).sort_values(
-                    by=['USAF', 'BEGIN'], ascending=[True, False])
+# path_isd_history = dir_data / file_isd_history
+# # assert path_isd_history.is_file()
+# # # #### Create df_isd_history for Station Detail lookup
+# df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
+#                      dtype={'WBAN': object}).sort_values(
+#                     by=['USAF', 'BEGIN'], ascending=[True, False])
 
 # NEED TO FIGURE OUT HOW TO USE IMPORTLIB.RESOURCES!!
 # # # Access a file in the noaa-weather-history package 'data' directory (not a relative, local, 'data' dir)
-# def read_isd_history(file):
-#     """Read isd-history CSV file from 'data' directory of Python package."""
-# #     data_res = importlib.resources.files("noaa-weather-hourly") / "data"
-#     data_res = importlib.resources.files("noaa-weather-hourly") / "data"
-#     with importlib.resources.as_file(data_res / file) as f:
-#         df = pd.read_csv(f)
-#     return df
+def read_isd_history(file):
+    """Read isd-history CSV file from 'data' directory of Python package."""
+#     data_res = importlib.resources.files("noaa_weather_hourly") / "data"
+    data_res = importlib.resources.files("noaa_weather_hourly") / "data"
+    with importlib.resources.as_file(data_res / file) as f:
+        df = pd.read_csv(f)
+    return df
 
-# df_isd_history = read_isd_history(file_isd_history)
+df_isd_history = read_isd_history(file_isd_history)
 
 # def read_csv_from_package(package_name, resource_name):
 #     """Reads a CSV file from a Python package using importlib.resources."""
@@ -281,14 +281,14 @@ df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
 #             print(row)
 
 # Example usage:
-# df_isd_history = read_csv_from_package("noaa-weather-hourly", file_isd_history)
+# df_isd_history = read_csv_from_package("noaa_weather_hourly", file_isd_history)
 
 
-# with importlib_resources.files("noaa-weather-hourly") / "data" / file_isd_history as isd_history:
+# with importlib_resources.files("noaa_weather_hourly") / "data" / file_isd_history as isd_history:
     
 
 
-# with importlib.resources.path("noaa-weather-hourly-cli.data", file_isd_history) as data_isd_history_path:
+# with importlib.resources.path("noaa_weather_hourly-cli.data", file_isd_history) as data_isd_history_path:
 #     with open(data_isd_history_path, 'r') as f:
 # #         reader_isd = csv.reader(f)
 #         df_isd_history = pd.read_csv(f, index_col='WBAN',
@@ -447,7 +447,7 @@ del df
 
 # ### Interpolate Null Values
 # According to the following parameters:
-# Because observed weather data commonly contains gaps (ie., NaN or null values), noaa-weather-hourly will attempt to fill in any such gaps to ensure that in each record a value is present for all of the hourly timestamps. To do so, it will use time-based interpolation for gaps up to a default value of 24 hours long ('max_records_to_interpolate').  For example if the dry bulb temperature has a gap with neighboring observed values like (20, X, X, X, X, 25), noaa-weather-hourly will replace the missing values to give (20, 21, 22, 23, 24, 25).
+# Because observed weather data commonly contains gaps (ie., NaN or null values), noaa_weather_hourly will attempt to fill in any such gaps to ensure that in each record a value is present for all of the hourly timestamps. To do so, it will use time-based interpolation for gaps up to a default value of 24 hours long ('max_records_to_interpolate').  For example if the dry bulb temperature has a gap with neighboring observed values like (20, X, X, X, X, 25), noaa_weather_hourly will replace the missing values to give (20, 21, 22, 23, 24, 25).
 # 
 # If a gap exists in the data that is larger than max_records_to_interpolate, NaN values will be left untouched and a complete datetime index will be preserved.
 df_out = df_out.interpolate(method='time',
