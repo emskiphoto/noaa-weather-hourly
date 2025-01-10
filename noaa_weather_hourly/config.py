@@ -24,7 +24,7 @@ file_isd_history = 'isd-history.csv'
 file_output_format = """{STATION_NAME} {start_str} to {end_str} {freqstr}.csv"""
 
 # Parameters
-pct_null_timestamp_max = 0.5
+pct_null_timestamp_max = 0.5  #0.5 = 50%
 max_records_to_interpolate = 24
 
 freqstr_frequency = {'D': 'Daily',

@@ -48,8 +48,8 @@ Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lc
 Open a terminal prompt ('Powershell' in Windows).  Navigate to specific folders using the `cd folder_name` command to go up the directory tree and `cd..` to go back down the directory tree.
     
 ### Usage for specific file 
-Process the version 1 LCD file ".\data\test_file_lcd1.csv" that is included in installation.  <BR>
-$ `noaa_weather_hourly ".\data\test_file_lcd1.csv"`
+Process the version 1 LCD file ".\data\3876540.csv" that is included in installation.  <BR>
+$ `noaa_weather_hourly -filename ".\data\3876540.csv"`
 
 ### Usage for most recent file(s)
 Automatically select the newest files in the current directory based on last date modified and group all files with the same weather station ID in to a single output.<BR>

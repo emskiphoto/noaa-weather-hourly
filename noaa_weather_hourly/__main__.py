@@ -21,9 +21,15 @@ from config import *
 from utils import *
 
 # Capture command line arguments
-parser = argparse.ArgumentParser(description='noaa-weather-hourly - for processing raw NOAA LCD observed weather .csv files.  Execute this command in a directory containing files to be processed')
+parser = argparse.ArgumentParser(description="""noaa-weather-hourly - for processing raw NOAA LCD observed weather .csv files.
+
+# Usage for specific file:
+Process the version 1 LCD file "./data//3876540.csv" that is included in installation.
+$ noaa_weather_hourly -filename "./data//3876540.csv"
+""")
+
 # optional argument 'filename' - if not supplied, script will search for files by pattern
-parser.add_argument('-filename', help='File path to NOAA LCD CSV file to be processed (ie. "data/test_file_lcd1.csv").  File path input is only needed to process files in other directories, otherwise the most recent file(s) in the current directory will be detected automatically.')
+parser.add_argument('-filename', help='File path to NOAA LCD CSV file to be processed (ie. "data/3876540.csv").  File path input is only needed to process files in other directories, otherwise the most recent file(s) in the current directory will be detected automatically.')
 # optional argument 'frequency' - default is 'H' (hourly).  If -frequency is provided
 parser.add_argument('-frequency', type=str, help=f'Time frequency of output CSV file {freqstr_frequency}.  Multiples of frequency values may also be used, for example "15T": 15-minute frequency.')
 
