@@ -33,7 +33,7 @@ Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lc
     a. `git clone https://github.com/emskiphoto/noaa_weather_hourly.git` at a terminal prompt (requires git installation [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
     a. Simple download….<BR>
     
-2. [__Install Python__ (version 3.8 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
+2. [__Install Python__ (version 3.7 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
 3. __Install pipx__ <BR>
     Windows:  
     `py -m pip install --user pipx`<BR>
@@ -123,7 +123,7 @@ NOAA LCD files can contain more than 100 types of meteorological observations, b
 5. Removes recurring daily timestamps that contain more null values than allowed by 'pct_null_timestamp_max' parameter
 6. Displays the percent of null values in source data to screen
 7. Resamples and/or interpolates values per the input '-frequency' value
-    - most columns are expected to have non-null values for every timestamp (i.e., 'DryBulbTemperature')
+    - most columns are expected to have numeric values for every timestamp.  The maximum number of contiguous missing values to be interpolated is 24.  The 'max_records_to_interpolate' default can be overriden in the command line, `noaa_weather_hourly -max_records_to_interpolate 12` would limit interpolations to no more than 12 missing values in a row 
     - some columns are expected to have null values at some times and the null values are preserved in the output (ie., 'Precipitation', 'WindGustSpeed') 
 8. Saves a single .CSV file to the same location as the source LCD file(s) (will overwrite existing files if an identical file already exists).
 9. Output file is named "{STATION_NAME} {start_MM-DD-YYYY} to {end_MM-DD-YYYY} {frequency}.csv", (ie.,
