@@ -17,8 +17,8 @@ import re
 # to read resources from the directories of this package
 import importlib.resources
 # import modules specific to this package 
-from config import *
-from utils import *
+from .config import *
+from .utils import *
 
 # Capture command line arguments
 parser = argparse.ArgumentParser(description="""noaa_weather_hourly - for processing raw NOAA LCD observed weather .csv files.
