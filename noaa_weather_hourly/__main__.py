@@ -30,8 +30,12 @@ $ noaa_weather_hourly -filename "./data//3876540.csv"
 
 # optional argument 'filename' - if not supplied, script will search for files by pattern
 parser.add_argument('-filename', help='File path to NOAA LCD CSV file to be processed (ie. "data/3876540.csv").  File path input is only needed to process files in other directories, otherwise the most recent file(s) in the current directory will be detected automatically.')
-# optional argument 'frequency' - default is 'H' (hourly).  If -frequency is provided
+# optional argument 'frequency' - default is 'H' (hourly).  If -frequency is provided:
 parser.add_argument('-frequency', type=str, help=f'Time frequency of output CSV file {freqstr_frequency}.  Multiples of frequency values may also be used, for example "15T": 15-minute frequency.')
+
+# optional argument 'max_records_to_interpolate' - default is 24.  
+parser.add_argument('-max_records_to_interpolate', type=int,
+                    help=f'Maximum quantity of contiguous null records to be estimated using interpolation.')
 
 args = parser.parse_args()
 
@@ -52,6 +56,10 @@ if args.frequency != None:
 # overwrite default 'filename' if filename was provided in command line arg
 if args.filename != None:
     filename = args.filename
+    
+# overwrite default 'max_records_to_interpolate' if max_records_to_interpolate was provided in command line arg
+if args.max_records_to_interpolate != None:
+    max_records_to_interpolate = args.max_records_to_interpolate
     
 # ## Locations
 # dir_cwd is where the command was entered and where files will be output to
@@ -251,54 +259,29 @@ df.drop(columns=['STATION', 'REPORT_TYPE', 'SOURCE'],
 
 # print(list(pathlib.Path.cwd().glob('*')))
 dir_data = dir_cwd / 'noaa_weather_hourly/data'
-
-# path_isd_history = dir_data / file_isd_history
-# # assert path_isd_history.is_file()
-# # # #### Create df_isd_history for Station Detail lookup
-# df_isd_history = pd.read_csv(path_isd_history, index_col='WBAN',
-#                      dtype={'WBAN': object}).sort_values(
-#                     by=['USAF', 'BEGIN'], ascending=[True, False])
+path_isd_history = dir_data / file_isd_history
+# assert path_isd_history.is_file()
+# # #### Create df_isd_history for Station Detail lookup
+# different pandas behavior when running v1.3.5 required revision to .csv read
 
 # NEED TO FIGURE OUT HOW TO USE IMPORTLIB.RESOURCES!!
 # # # Access a file in the noaa-weather-history package 'data' directory (not a relative, local, 'data' dir)
-def read_isd_history(file):
-    """Read isd-history CSV file from 'data' directory of Python package."""
-#     data_res = importlib.resources.files("noaa_weather_hourly") / "data"
-    data_res = importlib.resources.files("noaa_weather_hourly") / "data"
-    with importlib.resources.as_file(data_res / file) as f:
-        df = pd.read_csv(f)
-    return df
-
-df_isd_history = read_isd_history(file_isd_history)
-
-# def read_csv_from_package(package_name, resource_name):
-#     """Reads a CSV file from a Python package using importlib.resources."""
-
-#     with importlib.resources.open_text(package_name, resource_name) as f:
-#         return pd.read_csv(f)
-#         reader = csv.reader(f)
-#         for row in reader:
-#             print(row)
-
-# Example usage:
-# df_isd_history = read_csv_from_package("noaa_weather_hourly", file_isd_history)
-
-
-# with importlib_resources.files("noaa_weather_hourly") / "data" / file_isd_history as isd_history:
+# THIS WORKS!!!!
+# text_read = importlib.resources.read_text("noaa_weather_hourly.data", "test_text.txt")
+# text_read = importlib.resources.read_text("noaa_weather_hourly.data", "isd-history.csv")
+# print(text_read)
     
-
-
-# with importlib.resources.path("noaa_weather_hourly-cli.data", file_isd_history) as data_isd_history_path:
-#     with open(data_isd_history_path, 'r') as f:
-# #         reader_isd = csv.reader(f)
-#         df_isd_history = pd.read_csv(f, index_col='WBAN',
-#                      dtype={'WBAN': object}).sort_values(
-#                     by=['USAF', 'BEGIN'], ascending=[True, False])
+def read_isd_history_csv(file):
+    with importlib.resources.path("noaa_weather_hourly.data", file) as df:
+        return pd.read_csv(df, index_col='WBAN').sort_values(
+                    by=['USAF', 'BEGIN'], ascending=[True, False])
+df_isd_history = read_isd_history_csv(file_isd_history)
+# ensure WBAN index is a 5-character string
+df_isd_history.index = df_isd_history.index.astype(str).str.zfill(5)
 
 
 # is the station WBAN listed in df_isd_history?
 station_details_available_wban = station_wban in df_isd_history.index
-
 # is the station CALL listed in df_isd_history?
 station_details_available_call = station_call in df_isd_history['CALL'].values
 
@@ -336,14 +319,6 @@ idx_hours_no_source_data = pd.date_range(start_dt, end_dt, freq='H')\
                             .difference(df.index.round('H'))
 # how many hours of the curent time range have no observations?
 n_hours_no_source_data = len(idx_hours_no_source_data)
-
-# individually process all columns in df to be numeric --> float - MOVED TO ABOVE
-# for col_ in df.columns:
-#     df[col_] = pd.to_numeric(df[col_], errors='coerce')
-#     try:
-#         df[col_] = df[col_].astype(float)
-#     except:
-#         pass
     
  # if a single timestamp appears more than once, average available values
 # to return a single value and single timestamp (ignoring 
