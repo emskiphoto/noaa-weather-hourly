@@ -1,9 +1,23 @@
 [tool.poetry]
+version = "1.0.0"
 name = "noaa_weather_hourly"
-version = "0.1.0"
-description = ""
-authors = ["Matt Chmielewski <43832628+emskiphoto@users.noreply.github.com>"]
+description = "Cleans historical LCD weather files from NOAA and returns an hourly .CSV file"
+authors = ["Matt Chmielewski"]
 readme = "README.md"
+license = "Apache-2.0"
+keywords = ["noaa", "baseline-model", "sunrise-times", "noaa weather",  "8760", "energy model calibration", "sunset-times", 	"weather normalization",  "historical weather data", "weather files", "hourly weather"]
+classifiers = ["Programming Language :: Python"]
+packages = [
+    { include = "noaa_weather_hourly" },
+    { include = "noaa_weather_hourly/data" },
+]
+
+[project.urls]
+homepage = "https://github.com/emskiphoto/noaa_weather_hourly"
+repository = "https://github.com/emskiphoto/noaa_weather_hourly"
+
+[project.entry-points]
+noaa_weather_hourly = "noaa_weather_hourly.__main__:__main__"
 
 [tool.poetry.scripts]
 noaa_weather_hourly = "noaa_weather_hourly.__main__:__main__"

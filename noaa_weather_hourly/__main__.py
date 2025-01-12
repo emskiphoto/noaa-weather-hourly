@@ -529,10 +529,10 @@ file_out = dir_cwd / file_out_name
 # #### Save df_out to csv as file_out
 df_out.to_csv(file_out)
 assert file_out.is_file()
-print(f"""\nProcessed File Saved to: {file_out.as_posix()}\n
+print(f"""\nProcessed File Saved to:\n{file_out.as_posix()}\n
 {''.join(80 * ['*'])}
           ***************       PROCESS COMPLETE       ***************
-{''.join(80 * ['*'])}""")
+{''.join(80 * ['*'])}\n""")
 # ### Cleanup
 del df_out
 exit()
