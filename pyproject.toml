@@ -1,8 +1,10 @@
 [tool.poetry]
-version = "1.0.1"
+version = "1.0.3"
 name = "noaa_weather_hourly"
 description = "Cleans historical LCD weather files from NOAA and returns an hourly .CSV file"
 authors = ["Matt Chmielewski"]
+homepage = "https://github.com/emskiphoto/noaa_weather_hourly"
+repository = "https://github.com/emskiphoto/noaa_weather_hourly"
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["noaa", "baseline-model", "sunrise-times", "noaa weather",  "8760", "energy model calibration", "sunset-times", 	"weather normalization",  "historical weather data", "weather files", "hourly weather"]
