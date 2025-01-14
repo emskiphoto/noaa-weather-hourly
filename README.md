@@ -21,6 +21,7 @@
 * No source data
 
 <img alt="Clean LCD output file" width="800px" src="images\Clean LCD output file.PNG" />
+<img alt="Command Line Output" width="800px" src="images\command line output.PNG" />
 
 - [LCD Weather File Documentation](noaa_weather_hourly/data/LCD_documentation.pdf)
 
@@ -33,7 +34,7 @@ Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lc
     a. `git clone https://github.com/emskiphoto/noaa_weather_hourly.git` at a terminal prompt (requires git installation [git installation](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git))
     a. Simple download….<BR>
     
-2. [__Install Python__ (version 3.7 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
+2. [__Install Python__ (version 3.8 or newer)](https://www.python.org/downloads/#:~:text=Looking%20for%20a%20specific%20release%3F)
 3. __Install pipx__ <BR>
     Windows:  
     `py -m pip install --user pipx`<BR>
@@ -41,14 +42,15 @@ Does this seem like too much work?  [Download a NOAA CSV file](#download-noaa-lc
     Unix/macOS:<BR>
     `python3 -m pip install --user pipx`<BR>
     `python3 -m pipx ensurepath`<BR>
-4. __Install noaa_weather_hourly 
+4. __Install noaa_weather_hourly__ 
     `pipx install noaa_weather_hourly`
+<img alt="pipx install successful" width="800px" src="images\pipx install.PNG" />
 
 ## Usage
 Open a terminal prompt ('Powershell' in Windows).  Navigate to specific folders using the `cd folder_name` command to go up the directory tree and `cd..` to go back down the directory tree.
     
 ### Usage for specific file 
-Process the version 1 LCD file ".\data\3876540.csv" that is included in installation.  <BR>
+Process the version 1 LCD file ".\data\3876540.csv" that is included in installation.<BR>
 $ `noaa_weather_hourly -filename ".\data\3876540.csv"`
 
 ### Usage for most recent file(s)
@@ -113,9 +115,9 @@ It is recommended to store downloaded files in separate folders by location.
 The `noaa_weather_hourly` makes the source LCD file ready-to-use by resolving the following data formatting and quality issues.  
 <img alt="Raw LCD file data issues" width="600px" src='images\Raw LCD file data issues.PNG' />
     
-NOAA LCD files can contain more than 100 types of meteorological observations, but `noaa_weather_hourly` processes only [these output columns](#output-columns).  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in.
+NOAA LCD files can contain more than 100 types of meteorological observations, but `noaa_weather_hourly` processes only [these output columns](#output-columns).  This is a standalone process that does not access any external (internet) resources and operates only in the directory it is intiated in unless a `-filename` in another directory is provided.
 
-1. Creates a copy of the source LCD file(s), leaving the source file(s) unmodified
+1. Locates the most recent LCD v1 or v2 file in the current directory (or uses optional file specified in `-filename`) and creates a copy of the source file(s), leaving the source file(s) unmodified
 2. Extracts ID data and gathers additional station details
 3. Determines if input files are LCD v1 or v2 and 
 3. Merges multiple source files having the same station ID and resolves overlapping date ranges
@@ -123,7 +125,7 @@ NOAA LCD files can contain more than 100 types of meteorological observations, b
 5. Removes recurring daily timestamps that contain more null values than allowed by 'pct_null_timestamp_max' parameter
 6. Displays the percent of null values in source data to screen
 7. Resamples and/or interpolates values per the input '-frequency' value
-    - most columns are expected to have numeric values for every timestamp.  The maximum number of contiguous missing values to be interpolated is 24.  The 'max_records_to_interpolate' default can be overriden in the command line, `noaa_weather_hourly -max_records_to_interpolate 12` would limit interpolations to no more than 12 missing values in a row 
+    - most columns are expected to have numeric values for every timestamp.  The maximum number of contiguous missing values to be interpolated is 24.  The 'max_records_to_interpolate' default can be overriden in the command line, for example `noaa_weather_hourly -max_records_to_interpolate 12` would limit interpolations to no more than 12 missing values in a row 
     - some columns are expected to have null values at some times and the null values are preserved in the output (ie., 'Precipitation', 'WindGustSpeed') 
 8. Saves a single .CSV file to the same location as the source LCD file(s) (will overwrite existing files if an identical file already exists).
 9. Output file is named "{STATION_NAME} {start_MM-DD-YYYY} to {end_MM-DD-YYYY} {frequency}.csv", (ie.,
