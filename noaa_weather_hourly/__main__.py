@@ -462,7 +462,7 @@ df_stats_post = df_out[df_stats_pre.columns].describe()
 df_mean_comp = pd.concat([df_stats_pre.loc['mean'].T, df_stats_post.loc['mean'].T],
                          axis=1, keys=['Source Mean', 'Processed Mean']).round(2)\
                             .rename(index=col_rename_remove_hourly)
-df_mean_comp['% Difference'] = df_mean_comp.pct_change(axis=1).iloc[:,-1]\
+df_mean_comp['% Difference'] = df_mean_comp.pct_change(axis=1, fill_method=None).iloc[:,-1]\
                                 .fillna(0).round(4)\
                                 .apply(lambda n: '{:,.2%}'.format(n))
 
